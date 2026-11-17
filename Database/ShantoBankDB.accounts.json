@@ -1,0 +1,36 @@
+[{
+  "_id": {
+    "$oid": "6af18ab163b1f6674db7cf3f"
+  },
+  "name": "Shanto Debnath",
+  "accountNumber": "11",
+  "password": "11",
+  "balance": 3000
+},
+{
+  "_id": {
+    "$oid": "6af18b9d63b1f6674db7cf41"
+  },
+  "name": "Mr. Samsung",
+  "accountNumber": "12",
+  "password": "12",
+  "balance": 435
+},
+{
+  "_id": {
+    "$oid": "6afab1caab6b541ff73fa664"
+  },
+  "name": "Mr. Nokia",
+  "accountNumber": "13",
+  "password": "13",
+  "balance": 500
+},
+{
+  "_id": {
+    "$oid": "6afbee1a493d70a7ae8a6dc6"
+  },
+  "name": "Redmi",
+  "accountNumber": "14",
+  "password": "14",
+  "balance": 500
+}]
