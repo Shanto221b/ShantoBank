@@ -1,47 +1,44 @@
 import { useState } from "react";
 
 function Withdraw({
-  accounts,
-  setAccounts,
   currentUser,
+  setCurrentUser,
   setPage
 }) {
   const [amount, setAmount] = useState("");
 
-  function withdrawMoney(event) {
+  async function withdrawMoney(event) {
     event.preventDefault();
 
-    const withdrawAmount = Number(amount);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/withdraw",
+        {
+          method: "POST",
 
-    if (amount === "" || withdrawAmount <= 0) {
-      alert("Please enter a valid amount");
-      return;
-    }
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-    if (withdrawAmount > currentUser.balance) {
-      alert("Insufficient balance");
-      return;
-    }
+          body: JSON.stringify({
+            accountNumber: currentUser.accountNumber,
+            amount: amount
+          })
+        }
+      );
 
-    const updatedAccounts = accounts.map((account) => {
-      if (
-        account.accountNumber ===
-        currentUser.accountNumber
-      ) {
-        return {
-          ...account,
-          balance: account.balance - withdrawAmount
-        };
+      const data = await response.json();
+
+      if (response.ok) {
+        setCurrentUser(data.user);
+        alert(data.message);
+        setPage("dashboard");
+      } else {
+        alert(data.message);
       }
-
-      return account;
-    });
-
-    setAccounts(updatedAccounts);
-
-    alert("Money withdrawn successfully");
-
-    setPage("dashboard");
+    } catch (error) {
+      alert("Backend server is not running");
+    }
   }
 
   return (

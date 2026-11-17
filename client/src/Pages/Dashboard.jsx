@@ -1,16 +1,16 @@
 function Dashboard({
   currentUser,
-  setPage,
-  setCurrentAccountNumber
+  setCurrentUser,
+  setPage
 }) {
   function logoutUser() {
-    setCurrentAccountNumber("");
+    setCurrentUser(null);
     setPage("login");
   }
 
   return (
     <div>
-      <h1>MyBank Dashboard</h1>
+      <h1>Dashboard</h1>
 
       <h3>
         Account Holder: {currentUser.name}

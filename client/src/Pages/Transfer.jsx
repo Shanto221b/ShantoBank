@@ -1,85 +1,54 @@
 import { useState } from "react";
 
 function Transfer({
-  accounts,
-  setAccounts,
   currentUser,
+  setCurrentUser,
   setPage
 }) {
-  const [receiverAccountNumber, setReceiverAccountNumber] =
-    useState("");
+  const [
+    receiverAccountNumber,
+    setReceiverAccountNumber
+  ] = useState("");
 
   const [amount, setAmount] = useState("");
 
-  function transferMoney(event) {
+  async function transferMoney(event) {
     event.preventDefault();
 
-    const transferAmount = Number(amount);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/transfer",
+        {
+          method: "POST",
 
-    const receiver = accounts.find(
-      (account) =>
-        account.accountNumber === receiverAccountNumber
-    );
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-    if (receiverAccountNumber === "") {
-      alert("Please enter receiver account number");
-      return;
-    }
+          body: JSON.stringify({
+            senderAccountNumber:
+              currentUser.accountNumber,
 
-    if (
-      receiverAccountNumber ===
-      currentUser.accountNumber
-    ) {
-      alert(
-        "You cannot transfer money to your own account"
+            receiverAccountNumber:
+              receiverAccountNumber,
+
+            amount: amount
+          })
+        }
       );
-      return;
-    }
 
-    if (!receiver) {
-      alert("Receiver account not found");
-      return;
-    }
+      const data = await response.json();
 
-    if (amount === "" || transferAmount <= 0) {
-      alert("Please enter a valid amount");
-      return;
-    }
-
-    if (transferAmount > currentUser.balance) {
-      alert("Insufficient balance");
-      return;
-    }
-
-    const updatedAccounts = accounts.map((account) => {
-      if (
-        account.accountNumber ===
-        currentUser.accountNumber
-      ) {
-        return {
-          ...account,
-          balance: account.balance - transferAmount
-        };
+      if (response.ok) {
+        setCurrentUser(data.user);
+        alert(data.message);
+        setPage("dashboard");
+      } else {
+        alert(data.message);
       }
-
-      if (
-        account.accountNumber ===
-        receiverAccountNumber
-      ) {
-        return {
-          ...account,
-          balance: account.balance + transferAmount
-        };
-      }
-
-      return account;
-    });
-
-    setAccounts(updatedAccounts);
-
-    alert("Money transferred successfully");
-
-    setPage("dashboard");
+    } catch (error) {
+      alert("Backend server is not running");
+    }
   }
 
   return (
@@ -100,7 +69,9 @@ function Transfer({
           placeholder="Enter receiver account number"
           value={receiverAccountNumber}
           onChange={(event) =>
-            setReceiverAccountNumber(event.target.value)
+            setReceiverAccountNumber(
+              event.target.value
+            )
           }
         />
 

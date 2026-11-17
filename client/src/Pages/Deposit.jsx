@@ -1,42 +1,44 @@
 import { useState } from "react";
 
 function Deposit({
-  accounts,
-  setAccounts,
   currentUser,
+  setCurrentUser,
   setPage
 }) {
   const [amount, setAmount] = useState("");
 
-  function depositMoney(event) {
+  async function depositMoney(event) {
     event.preventDefault();
 
-    const depositAmount = Number(amount);
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/deposit",
+        {
+          method: "POST",
 
-    if (amount === "" || depositAmount <= 0) {
-      alert("Please enter a valid amount");
-      return;
-    }
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-    const updatedAccounts = accounts.map((account) => {
-      if (
-        account.accountNumber ===
-        currentUser.accountNumber
-      ) {
-        return {
-          ...account,
-          balance: account.balance + depositAmount
-        };
+          body: JSON.stringify({
+            accountNumber: currentUser.accountNumber,
+            amount: amount
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setCurrentUser(data.user);
+        alert(data.message);
+        setPage("dashboard");
+      } else {
+        alert(data.message);
       }
-
-      return account;
-    });
-
-    setAccounts(updatedAccounts);
-
-    alert("Money deposited successfully");
-
-    setPage("dashboard");
+    } catch (error) {
+      alert("Backend server is not running");
+    }
   }
 
   return (
